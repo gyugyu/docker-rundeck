@@ -6,21 +6,26 @@ then
     mkdir -p /data/etc /data/ssh /data/projects /var/lib/rundeck/.ssh
     chown rundeck:rundeck /data/etc /data/ssh /data/projects /var/lib/rundeck/.ssh
     
-    # Rundeck configuration initial files if not present in the volume
-    for FILE in `ls /root/rundeck-config`
+    for FILE in `ls /etc/rundeck`
     do
-      # If is not in the volume we copied the initial and linked to etc
-      if [ ! -f /data/etc/$FILE ]
+      if [ ! -f /data/etc/$FILE ] && [ -f /root/rundeck-config/$FILE ]
       then
         cp /root/rundeck-config/$FILE /data/etc/$FILE
         chown rundeck:rundeck /data/etc/$FILE
-      fi
-      if [ -f /etc/rundeck/$FILE ]
+        rm /etc/rundeck/$FILE
+        ln -s /data/etc/$FILE /etc/rundeck/$FILE
+      elif [ -f /data/etc/$FILE ]
       then 
         rm /etc/rundeck/$FILE
+        ln -s /data/etc/$FILE /etc/rundeck/$FILE
       fi
-      ln -s /data/etc/$FILE /etc/rundeck/$FILE
     done
+
+    if [ ! -L /var/rundeck/projects ] && [ ! "$(ls -A /var/rundeck/projects)" ]
+    then
+      rmdir /var/rundeck/projects
+      ln -s /data/projects/ /var/rundeck/projects
+    fi
   
     # Special case initial realm.properties
     if [ ! -f /data/etc/realm.properties ]
@@ -30,15 +35,15 @@ then
     fi
     rm /etc/rundeck/realm.properties
     ln -s /data/etc/realm.properties /etc/rundeck/realm.properties
-    
+
     # Configure rundeck via envtpl
     rm /etc/rundeck/rundeck-config.properties
-    envtpl -o /etc/rundeck/rundeck-config.groovy --allow-missing --keep-template /root/rundeck-config-templates/rundeck-config.groovy
-    chown rundeck:rundeck /etc/rundeck/rundeck-config.groovy
+    envtpl -o /etc/rundeck/rundeck-config.properties --allow-missing --keep-template /root/rundeck-config-templates/rundeck-config.properties
+    chown rundeck:rundeck /etc/rundeck/rundeck-config.properties
     
-    # Configure profile 
-    cp /root/rundeck-config-templates/profile /etc/rundeck/profile
-    chown rundeck:rundeck /etc/rundeck/profile
+    # Configure profile
+    rm /etc/default/rundeckd
+    envtpl -o /etc/default/rundeckd --allow-missing --keep-template /root/rundeck-config-templates/rundeckd
     
     # Configure ssh
     cp /root/rundeck-config-templates/config_ssh /var/lib/rundeck/.ssh/config

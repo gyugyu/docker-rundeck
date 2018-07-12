@@ -1,40 +1,24 @@
-FROM java:openjdk-7-jdk
+FROM openjdk:8
 
-MAINTAINER Edu Herraiz <ghark@gmail.com>
+ENV RUNDECK_VERSION 2.11.5
+ENV RUNDECK_SLACK_INCOMING_WEBHOOK_PLUGIN_VERSION 0.6
 
-ENV GRAILS_VERSION 3.1.0
-
-RUN  \
-    echo "deb http://dl.bintray.com/rundeck/rundeck-deb /" | tee -a /etc/apt/sources.list.d/rundeck.list && \
-    wget -qO- https://bintray.com/user/downloadSubjectPublicKey?username=bintray | apt-key add -
 COPY system-requirements.txt /root/system-requirements.txt
 RUN  \
     apt-get update && \
-    apt-get -y upgrade && \
-    apt-get -y autoremove && \
     xargs apt-get -y -q install < /root/system-requirements.txt && \
-    apt-get clean
+    apt-get clean && \
+    wget -q http://download.rundeck.org/deb/rundeck_$RUNDECK_VERSION-1-GA_all.deb -P /tmp/ && \
+    dpkg -i /tmp/rundeck_$RUNDECK_VERSION-1-GA_all.deb && \
+    wget -q https://github.com/higanworks/rundeck-slack-incoming-webhook-plugin/releases/download/v$RUNDECK_SLACK_INCOMING_WEBHOOK_PLUGIN_VERSION.dev/rundeck-slack-incoming-webhook-plugin-$RUNDECK_SLACK_INCOMING_WEBHOOK_PLUGIN_VERSION.jar -P /var/lib/rundeck/libext/
 
 COPY requirements.txt /root/requirements.txt
 RUN pip install -r /root/requirements.txt
-
-# RUN curl -s get.sdkman.io | bash && \
-#     chmod +x /root/.sdkman/bin/sdkman-init.sh && \
-#     /root/.sdkman/bin/sdkman-init.sh && \
-#     yes | sdk install grails
 
 ENV HOME /var/lib/rundeck
 ENV SHELL bash
 ENV WORKON_HOME /var/lib/rundeck
 WORKDIR /var/lib/rundeck
-
-# Install grails necessary to send mails
-RUN wget https://github.com/grails/grails-core/releases/download/v$GRAILS_VERSION/grails-$GRAILS_VERSION.zip && \
-    unzip grails-$GRAILS_VERSION.zip && \
-    rm -rf grails-$GRAILS_VERSION.zip && \
-    ln -s grails-$GRAILS_VERSION grails
-ENV GRAILS_HOME /var/lib/rundeck/grails
-ENV PATH $GRAILS_HOME/bin:$PATH
 
 VOLUME /data
 

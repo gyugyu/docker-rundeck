@@ -1,0 +1,5 @@
+{% if RUNDECK_JVM_EXTRA_SETTINGS is defined %}
+export RDECK_JVM_SETTINGS=" {{ RUNDECK_JVM_EXTRA_SETTINGS }} -Xmx1024m -Xms256m -XX:MaxMetaspaceSize=256m -server"
+{% elif RUNDECK_JVM_SETTINGS is defined %}
+export RDECK_JVM_SETTINGS=" {{ RUNDECK_JVM_SETTINGS }}"
+{% endif %}
