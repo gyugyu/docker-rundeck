@@ -42,7 +42,10 @@ then
     chown rundeck:rundeck /etc/rundeck/rundeck-config.properties
     
     # Configure profile
-    rm /etc/default/rundeckd
+    if [ -f /etc/default/rundeckd ]
+    then
+      rm /etc/default/rundeckd
+    fi
     envtpl -o /etc/default/rundeckd --allow-missing --keep-template /root/rundeck-config-templates/rundeckd
     
     # Configure ssh

@@ -1,0 +1,20 @@
+web:
+  build: .
+  environment:
+    RUNDECK_DATABASE_ENGINE: mysql
+    RUNDECK_INITIAL_ADMIN_PASSWORD: apslrocks
+    RUNDECK_MYSQL_HOST: mysql
+    RUNDECK_MYSQL_DATABASE: rundeckdb
+    RUNDECK_MYSQL_USER: urundeck
+    RUNDECK_MYSQL_PASSWORD: rundeckpass
+  links:
+    - "mysql:mysql"
+  ports:
+    - "4440:4440"
+mysql:
+  image: mysql:5.7.22
+  environment:
+    MYSQL_DATABASE: rundeckdb
+    MYSQL_USER: urundeck
+    MYSQL_PASSWORD: rundeckpass
+    MYSQL_ROOT_PASSWORD: ashoNg0aloqu2oh
