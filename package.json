@@ -1,0 +1,14 @@
+{
+  "private": true,
+  "devDependencies": {
+    "cypress": "^3.0.3",
+    "eslint": "^5.2.0",
+    "eslint-plugin-cypress-dev": "^1.1.2",
+    "eslint-plugin-mocha": "^5.1.0"
+  },
+  "scripts": {
+    "cypress:open": "cypress open",
+    "cypress:run": "cypress run",
+    "lint": "eslint --fix cypress/*/*.js"
+  }
+}
