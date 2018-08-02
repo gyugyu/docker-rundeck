@@ -26,21 +26,3 @@ namespace :spec do
     end
   end
 end
-
-namespace :node do
-  task :test do
-    sh "npm run cypress:run"
-  end
-
-  task :npm_ci do
-    sh "npm ci"
-  end
-
-  task node: :nvm do
-    sh({"NVM_DIR" => "$HOME/.nvm"}, ". $NVM_DIR/nvm.sh && nvm install v10.7.0 && nvm alias default v10.7.0")
-  end
-
-  task :nvm do
-    sh "curl -o- https://raw.githubusercontent.com/creationix/nvm/v0.33.11/install.sh | bash"
-  end
-end
