@@ -14,7 +14,7 @@ cache:
     - ~/.cache
 
 before_install:
-  - docker-compose -f docker-compose.test.yml up -d --build
+  - docker-compose -f docker-compose-test.yml up -d --build
 
 install:
   - bundle install --jobs=3 --retry=3
@@ -23,7 +23,7 @@ install:
   - npm ci
 
 before_script:
-  - sleep 30
+  - sleep 45
 
 script:
   - bundle exec rake spec
