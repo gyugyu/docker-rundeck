@@ -23,7 +23,7 @@ install:
   - npm ci
 
 before_script:
-  - sleep 30
+  - sleep 45
 
 script:
   - bundle exec rake spec
